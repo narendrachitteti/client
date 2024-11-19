@@ -260,7 +260,14 @@ const Navbar = () => {
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </>
               ) : (
-                <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose(); // Close the menu
+                    navigate("/login"); // Navigate to the login page
+                  }}
+                >
+                  Login
+                </MenuItem>
               )}
             </Menu>
           </div>
