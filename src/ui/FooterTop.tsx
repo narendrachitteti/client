@@ -1,69 +1,77 @@
 import React from "react";
-import Container from "./Container";
+import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
+import farmLogo from "../assets/logo12.png";
+import googleplay from "../assets/googleplay.webp";
 
-const FooterTop = () => {
-  const incentives = [
-    {
-      name: "Free shipping",
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce/icons/icon-shipping-simple.svg",
-      description:
-        "It's not actually free we just price it into the products. Someone's paying for it, and it's not us.",
-    },
-    {
-      name: "10-year warranty",
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce/icons/icon-warranty-simple.svg",
-      description:
-        "If it breaks in the first 10 years we'll replace it. After that you're on your own though.",
-    },
-    {
-      name: "Exchanges",
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce/icons/icon-exchange-simple.svg",
-      description:
-        "If you don't like it, trade it to one of your friends for something of theirs. Don't send it here though.",
-    },
-  ];
+const Footer = () => {
   return (
-    <Container className="py-0">
-      <div className=" rounded-2xl bg-[#f6f6f6] px-6 py-16 sm:p-16">
-        <div className="mx-auto max-w-xl lg:max-w-none">
-          <div className="text-center">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">
-              We built our business on customer service
-            </h2>
+    <footer className="bg-gray-100 py-8 border-t border-gray-300">
+      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0">
+        
+        {/* Left Section: Logo and App Download */}
+        <div className="flex flex-col items-center md:items-start">
+          <img
+            src={farmLogo} // Replace with your actual logo path
+            alt="Farm E-Store Logo"
+            className="w-24 mb-4"
+          />
+          <div className="flex flex-col items-center md:items-start">
+            <img
+              src={googleplay} // Replace with your actual Google Play image path
+              alt="Download on Google Play"
+              className="w-32 mb-4"
+            />
+            <p className="text-gray-600 font-semibold mb-2 text-center md:text-left">Social Links</p>
+            <div className="flex space-x-2">
+              <FaFacebookF className="text-gray-600 hover:text-blue-600 cursor-pointer" />
+              <FaTwitter className="text-gray-600 hover:text-blue-400 cursor-pointer" />
+              <FaInstagram className="text-gray-600 hover:text-pink-500 cursor-pointer" />
+              <FaYoutube className="text-gray-600 hover:text-red-600 cursor-pointer" />
+              <FaLinkedinIn className="text-gray-600 hover:text-blue-700 cursor-pointer" />
+            </div>
           </div>
         </div>
-        <div className="mx-auto mt-12 grid max-w-sm grid-cols-1 gap-8 sm:max-w-none lg:grid-cols-3">
-          {incentives.map((item) => (
-            <div
-              key={item?.name}
-              className="text-center sm:flex sm:text-left lg:block lg:text-center"
-            >
-              <div className=" sm:flex-shrink-0">
-                <div className="flex-root">
-                  <img
-                    src={item?.imageSrc}
-                    alt="image"
-                    className="mx-auto h-16 w-16"
-                  />
-                </div>
-              </div>
-              <div className="mt-3 sm:ml-6 lg:ml-0">
-                <h3 className="text-base font-medium text-gray-900">
-                  {item?.name}
-                </h3>
-                <p className="mt-2 text-sm text-gray-500">
-                  {item?.description}
-                </p>
-              </div>
-            </div>
-          ))}
+
+        {/* Middle Section: Links and Address */}
+        <div className="flex flex-col md:flex-row text-gray-700 text-center md:text-left space-y-4 md:space-y-0 md:space-x-12">
+          <div className="flex flex-col space-y-2">
+            <a href="#" className="hover:text-green-600">About us</a>
+            <a href="#" className="hover:text-green-600">Contact Us</a>
+            <a href="#" className="hover:text-green-600">Privacy Policy</a>
+            <a href="#" className="hover:text-green-600">Terms & Conditions</a>
+            <a href="#" className="hover:text-green-600">Return & Refund Policy</a>
+            <a href="#" className="hover:text-green-600">Shipping/Delivery Policy</a>
+            <a href="#" className="hover:text-green-600">Careers</a>
+            <a href="#" className="hover:text-green-600">FAQ</a>
+          </div>
+          <div className="md:border-l border-gray-300 md:pl-4">
+            <p className="font-semibold">Registered office:</p>
+            <p>Farm E-Store Private Limited</p>
+            <p>6/237-G-8-K Devalam Street</p>
+            <p>Extn.Ward No.6, Madanapalle-517325</p>
+            <p>Annamayya District, Andhra Pradesh.</p>
+            <p>CIN: U74999AP2022PTC121551</p>
+          </div>
+        </div>
+
+        {/* Right Section: Call and WhatsApp */}
+        <div className="flex flex-col items-center md:items-end">
+          <div className="bg-orange-400 text-white py-2 px-4 rounded-md mb-2 text-center text-lg font-semibold">
+            Call To Order<br />9010189891
+          </div>
+          <button className="flex items-center space-x-2 text-green-600 text-lg font-semibold">
+            <FaWhatsapp className="text-2xl" />
+            <span>WhatsApp To Order</span>
+          </button>
         </div>
       </div>
-    </Container>
+
+      {/* Copyright Section */}
+      <div className="bg-green-600 text-white py-4 mt-8 text-center text-sm">
+        Copyright © 2024 Farm E-Store Private Limited
+      </div>
+    </footer>
   );
 };
 
-export default FooterTop;
+export default Footer;

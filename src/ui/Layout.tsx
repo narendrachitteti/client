@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <Header />
+      <Header className="fixed top-0 left-0 w-full z-50" />
       {children}
       <Footer />
       <Toaster

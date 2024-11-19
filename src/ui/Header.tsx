@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FiSearch,
   FiHeart,
@@ -7,17 +7,29 @@ import {
   FiShoppingCart,
   FiMenu,
   FiX,
+  FiChevronDown,
+  FiChevronUp,
 } from "react-icons/fi";
 import farmLogo from "../assets/farmLogo.png";
+import { useCart } from "../contexts/CartContext";
+import CartPage from "./CartPage";
+import { Menu, MenuItem, IconButton, Avatar } from "@mui/material";
 
 const Navbar = () => {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [isMenuOpen, setMenuOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("en"); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [showPopularSearches, setShowPopularSearches] = useState(false);
+  const { cartCount } = useCart(); // Access the cart count
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null); // For user dropdown
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [user, setUser] = useState(null); // Store user information
+  const navigate = useNavigate();
 
-  // Fetch categories from the API
+  // Fetch categories and subcategories only once on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -30,11 +42,9 @@ const Navbar = () => {
         console.error("Error fetching categories:", error);
       }
     };
-
     fetchCategories();
   }, []);
 
-  // Fetch subcategories from the API
   useEffect(() => {
     const fetchSubCategories = async () => {
       try {
@@ -47,20 +57,39 @@ const Navbar = () => {
         console.error("Error fetching subcategories:", error);
       }
     };
-
     fetchSubCategories();
   }, []);
 
-  // Language change handler
-  const handleLanguageChange = (lang) => {
+  // Check for logged-in user status
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setIsLoggedIn(true);
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUser(null);
+    setAnchorEl(null);
+    navigate("/login");
+  }, [navigate]);
+
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleLanguageChange = useCallback((lang) => {
     setSelectedLanguage(lang);
-    // You can add logic to change the app's language here
-  };
+  }, []);
 
   return (
-    <nav className="bg-white border-b shadow-md relative z-50">
-      {/* Top Bar */}
-      <div className="flex justify-between items-center px-6 py-2 bg-green-800 text-white text-sm">
+    <nav className="bg-white border-b shadow-md relative z-40">
+      {/* // <nav className="fixed top-0 left-0 w-full bg-white border-b shadow-md z-50">  */}
+      {/* Promotional section and top nav */}
+      <div className="hidden lg:flex justify-between items-center px-6 py-2 bg-green-800 text-white text-sm">
         <div className="flex space-x-4">
           <a href="#" className="hover:underline">
             Sell on Farm E-store
@@ -72,89 +101,190 @@ const Navbar = () => {
             Corporate Site
           </a>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="bg-orange-500 px-2 py-1 rounded text-white font-semibold">
-            Missed Call To Order: 1800-3000-2434
-          </span>
-        </div>
+        <span className="bg-orange-500 px-2 py-1 rounded text-white font-semibold">
+          Missed Call To Order: 1800-3000-2434
+        </span>
       </div>
 
-      {/* Main Navbar */}
-      <div className="flex justify-between items-center px-6 py-4">
-        {/* Logo */}
-        <img src={farmLogo} alt="Logo" className="h-16" />
+      {/* Logo and Icons */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center px-6 py-4">
+        <div className="flex justify-between items-center w-full lg:w-auto">
+          <button
+            onClick={() => setMenuOpen(!isMenuOpen)}
+            className="text-black lg:hidden mr-2"
+          >
+            {isMenuOpen ? (
+              <FiX className="w-6 h-6" />
+            ) : (
+              <FiMenu className="w-6 h-6" />
+            )}
+          </button>
+          <Link to="/">
+            <img src={farmLogo} alt="Logo" className="h-16" />
+          </Link>
+          <div className="flex items-center space-x-2 lg:hidden">
+            <select
+              value={selectedLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 text-gray-600"
+            >
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+              <option value="fr">FR</option>
+              <option value="hi">HI</option>
+            </select>
+            {/* <Link to="#" className="text-gray-600 hover:text-gray-800">
+              <FiHeart className="w-5 h-5" />
+            </Link> */}
+            <div>
+              <IconButton onClick={handleMenuClick}>
+                <Avatar>
+                  {isLoggedIn && user?.name ? (
+                    user.name.charAt(0).toUpperCase()
+                  ) : (
+                    <FiUser />
+                  )}
+                </Avatar>
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                PaperProps={{ style: { width: 200 } }}
+              >
+                {isLoggedIn ? (
+                  <>
+                    <MenuItem>Welcome, {user?.name || "User"}</MenuItem>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </>
+                ) : (
+                  <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
+                )}
+              </Menu>
+            </div>
 
-        {/* Search Input for All Screens */}
-        <div className="flex-grow mx-2 relative max-w-xs">
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative text-gray-600 hover:text-gray-800 cart-icon"
+            >
+              <FiShoppingCart className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Search Input */}
+        <div className="w-full flex-grow mx-2 relative lg:max-w-xs">
           <input
             type="text"
             placeholder="Search..."
             className="w-full border border-gray-300 rounded-l px-4 py-2"
+            onFocus={() => setShowPopularSearches(true)}
+            onBlur={() => setShowPopularSearches(false)}
           />
           <div className="absolute right-0 top-0 bottom-0 flex items-center border-l border-gray-300 bg-[#FA9527] rounded-r px-2">
             <FiSearch className="w-5 h-5 text-white" />
           </div>
+
+          {showPopularSearches && (
+            <div className="absolute top-11 left-0 w-full sm:w-80 h-auto max-w-xs transform bg-white px-3 py-1 shadow-xl transition-all rounded-lg z-50">
+              <p className="font-medium text-black mb-3">Popular Searches</p>
+              {[
+                "Boron",
+                "Biovita",
+                "Humic acid",
+                "Nativo",
+                "Alika",
+                "Round",
+                "Tata",
+                "Ampligo",
+              ].map((term, index) => (
+                <button
+                  key={index}
+                  className="rounded-2xl md:rounded-xl leading-[normal] px-3 md:px-2.5 py-1.5 mr-2.5 mb-2.5 bg-borderColor border-borderColor"
+                >
+                  <p className="text-sm font-medium text-black text-center">
+                    {term}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Language Selector */}
-        <select
-          value={selectedLanguage}
-          onChange={(e) => handleLanguageChange(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-1 text-gray-600"
-        >
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="hi">हिन्दी</option>
-        </select>
-
-        {/* Icons for Mobile and Large Screens */}
-        <div className="flex items-center space-x-4">
-          {/* Mobile Icons */}
-          <Link to="#" className="text-gray-600 hover:text-gray-800 lg:hidden">
+        {/* Desktop Icon Menu */}
+        <div className="hidden lg:flex items-center space-x-4 lg:space-x-6">
+          <div className="flex items-center">
+            <span className="language-icon"></span>{" "}
+            {/* Rotating letters icon */}
+            <select
+              value={selectedLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="border border-gray-300 rounded px-2 py-1 text-gray-600"
+            >
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="te">తెలుగు</option>
+            </select>
+          </div>
+          <Link
+            to="#"
+            className="text-gray-600 hover:text-gray-800 flex items-center"
+          >
             <FiHeart className="w-5 h-5" />
+            <span className="ml-1">Wishlist</span>
           </Link>
-          <Link to="#" className="text-gray-600 hover:text-gray-800 lg:hidden">
-            <FiUser className="w-5 h-5" />
-          </Link>
-          <Link to="#" className="text-gray-600 hover:text-gray-800 lg:hidden">
-            <FiShoppingCart className="w-5 h-5" />
-          </Link>
-
-          {/* Desktop Icons with Labels */}
-          <div className="hidden lg:flex items-center space-x-1">
-            <Link to="#" className="text-gray-600 hover:text-gray-800 flex items-center">
-              <FiHeart className="w-5 h-5" />
-              <span className="ml-1">Wishlist</span>
-            </Link>
-            <Link to="#" className="text-gray-600 hover:text-gray-800 flex items-center">
-              <FiUser className="w-5 h-5" />
-              <span className="ml-1">Login</span>
-            </Link>
-            <Link to="#" className="text-gray-600 hover:text-gray-800 flex items-center">
-              <FiShoppingCart className="w-5 h-5" />
-              <span className="ml-1">Cart</span>
-            </Link>
+          <div>
+            <IconButton onClick={handleMenuClick}>
+              <Avatar>
+                {isLoggedIn && user?.name ? (
+                  user.name.charAt(0).toUpperCase()
+                ) : (
+                  <FiUser />
+                )}
+              </Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              PaperProps={{ style: { width: 200 } }}
+            >
+              {isLoggedIn ? (
+                <>
+                  <MenuItem>Welcome, {user?.name || "User"}</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </>
+              ) : (
+                <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
+              )}
+            </Menu>
           </div>
 
-          {/* Hamburger Menu */}
           <button
-            onClick={() => setMenuOpen(!isMenuOpen)}
-            className="text-black lg:hidden"
+            onClick={() => setIsCartOpen(true)}
+            className="relative text-gray-600 hover:text-gray-800 cart-icon"
           >
-            {isMenuOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+            <FiShoppingCart className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </button>
         </div>
       </div>
-      <hr />
 
-      {/* Main Categories - Left Drawer for Mobile */}
+      {/* Category Menu */}
       <div
-        className={`fixed inset-y-0 left-0 bg-white p-6 transition-transform transform ${
+        className={`fixed inset-y-0 left-0 bg-white p-6 border border-green-300 rounded-md shadow-lg transition-transform transform ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:static lg:translate-x-0 lg:flex lg:justify-center lg:space-x-6 py-4 text-gray-600 font-semibold text-sm z-50`}
+        } lg:static lg:translate-x-0 lg:flex lg:justify-center lg:space-x-6 py-4 text-gray-600 font-semibold text-sm lg:relative border-t border-gray-300`}
       >
-        {/* Close Button for Mobile */}
         {isMenuOpen && (
           <button
             className="text-black lg:hidden mb-4"
@@ -164,36 +294,68 @@ const Navbar = () => {
           </button>
         )}
 
-        {/* Categories List */}
-        {categories.map((category) => (
-          <div
-            key={category._id}
-            className="relative group"
-            onClick={() =>
-              setActiveCategory(activeCategory === category._id ? null : category._id)
-            }
-          >
-            <Link to="#" className="hover:text-gray-800">
-              {category.title}
-            </Link>
-            {(activeCategory === category._id || (isMenuOpen && activeCategory === category._id)) && (
-              <div className="absolute top-full mt-1 bg-white border z-50 rounded shadow-lg w-48 lg:group-hover:block">
-                {subCategories
-                  .filter((sub) => sub.category_id === category._id)
-                  .map((sub) => (
-                    <Link
-                      to="#"
-                      key={sub._id}
-                      className="block px-4 py-2 hover:bg-gray-100"
-                    >
-                      {sub.title}
-                    </Link>
-                  ))}
+        {categories.map((category) => {
+          const hasSubcategories = subCategories.some(
+            (sub) => sub.category_id === category._id
+          );
+          return (
+            <div key={category._id} className="relative group">
+              <div className="flex items-center justify-between">
+                <Link to="#" className="hover:text-gray-800 py-2">
+                  {category.title}
+                </Link>
+                {hasSubcategories && (
+                  <button
+                    onClick={() =>
+                      window.innerWidth < 1024
+                        ? setActiveCategory(
+                            activeCategory === category._id
+                              ? null
+                              : category._id
+                          )
+                        : null
+                    }
+                    className="lg:hidden"
+                  >
+                    {activeCategory === category._id ? (
+                      <FiChevronUp className="w-5 h-5 text-gray-600" />
+                    ) : (
+                      <FiChevronDown className="w-5 h-5 text-gray-600" />
+                    )}
+                  </button>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+              {hasSubcategories && (
+                <div
+                  className={`lg:absolute lg:top-full lg:left-0 lg:bg-white lg:shadow-lg lg:rounded-md lg:p-2 lg:invisible lg:group-hover:visible ${
+                    activeCategory === category._id || window.innerWidth >= 1024
+                      ? "block"
+                      : "hidden"
+                  }`}
+                >
+                  <ul>
+                    {subCategories
+                      .filter((sub) => sub.category_id === category._id)
+                      .map((sub) => (
+                        <li
+                          key={sub._id}
+                          className="py-1 px-2 hover:bg-gray-100"
+                        >
+                          <Link
+                            to={`/category/${category._id}/subcategory/${sub._id}/products`}
+                          >
+                            {sub.title}
+                          </Link>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
+      <CartPage isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </nav>
   );
 };

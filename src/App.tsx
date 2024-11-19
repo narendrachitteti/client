@@ -1,29 +1,29 @@
 import "react-multi-carousel/lib/styles.css";
-import BannerCategories from "./ui/BannerCategories";
 import HomeBanner from "./ui/HomeBanner";
-import Hightlights from "./ui/Hightlights";
 import Categories from "./ui/Categories";
 import ProductList from "./ui/ProductList";
-import DiscountedBanner from "./ui/DiscountedBanner";
-import Blog from "./ui/Blog";
+// import Blog from "./ui/Blog";
 import BrandSection from "./ui/BrandSection";
 import BenefitsSection from "./ui/BenefitsSection";
-// import FiltersExample from "./pages/FiltersExample";
+import ExclusiveGallery from "./ui/ExclusiveGallery";
+import CropDiagnosis from "./ui/CropDiagnosis";
+import StatsSection from "./ui/StatsSection";
+import CropsSection from "./ui/Crops";
 function App() {
   return (
     <main>
-      {/* <BannerCategories /> */}
       <HomeBanner />
-      {/* <FiltersExample/> */}
       <Categories />
-      {/* <Hightlights /> */}
+      <CropDiagnosis/>
       <BrandSection/>
+      <CropsSection/>
+      <ExclusiveGallery />
       <BenefitsSection/>
       <ProductList />
-      {/* DiscountedBanner */}
-      {/* <DiscountedBanner /> */}
-      {/* Blog */}
-      <Blog />
+      <StatsSection/>
+      <br/>
+
+      {/* <Blog /> */}
     </main>
   );
 }

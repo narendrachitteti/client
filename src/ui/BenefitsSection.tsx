@@ -18,7 +18,7 @@ const BenefitsSection = () => {
   ];
 
   return (
-    <div className="bg-green-100 py-6">
+    <div className="py-6" style={{ backgroundColor: '#EEF7DB' }}>
       <div className="container mx-auto flex justify-around items-center space-x-6">
         {benefits.map((benefit, index) => (
           <div
