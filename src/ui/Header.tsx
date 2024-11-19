@@ -13,6 +13,8 @@ import {
 import farmLogo from "../assets/farmLogo.png";
 import { useCart } from "../contexts/CartContext";
 import CartPage from "./CartPage";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { Menu, MenuItem, IconButton, Avatar } from "@mui/material";
 
 const Navbar = () => {
@@ -77,6 +79,29 @@ const Navbar = () => {
     navigate("/login");
   }, [navigate]);
 
+  const handleCartClick = () => {
+    // Check if user is logged in before opening cart
+    const storedUser = localStorage.getItem("user");
+    
+    if (storedUser) {
+      setIsCartOpen(true);
+    } else {
+      // Redirect to login page if not logged in
+      navigate("/login");
+      
+      // Use toast.info only once
+      toast.info("Please login to view your cart", {
+        toastId: 'loginCartToast', // Add a unique ID to prevent duplicate toasts
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+  
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   const handleMenuClose = () => setAnchorEl(null);
@@ -163,7 +188,7 @@ const Navbar = () => {
               </Menu>
             </div>
 
-            <button
+            {/* <button
               onClick={() => setIsCartOpen(true)}
               className="relative text-gray-600 hover:text-gray-800 cart-icon"
             >
@@ -173,7 +198,18 @@ const Navbar = () => {
                   {cartCount}
                 </span>
               )}
-            </button>
+            </button> */}
+            <button
+        onClick={handleCartClick}
+        className="relative text-gray-600 hover:text-gray-800 cart-icon"
+      >
+        <FiShoppingCart className="w-5 h-5" />
+        {cartCount > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+            {cartCount}
+          </span>
+        )}
+      </button>
           </div>
         </div>
 
@@ -273,16 +309,16 @@ const Navbar = () => {
           </div>
 
           <button
-            onClick={() => setIsCartOpen(true)}
-            className="relative text-gray-600 hover:text-gray-800 cart-icon"
-          >
-            <FiShoppingCart className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </button>
+        onClick={handleCartClick}
+        className="relative text-gray-600 hover:text-gray-800 cart-icon"
+      >
+        <FiShoppingCart className="w-5 h-5" />
+        {cartCount > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
+            {cartCount}
+          </span>
+        )}
+      </button>
         </div>
       </div>
 
@@ -363,6 +399,7 @@ const Navbar = () => {
         })}
       </div>
       <CartPage isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <ToastContainer />
     </nav>
   );
 };
