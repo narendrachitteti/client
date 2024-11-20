@@ -237,7 +237,7 @@ const ProductDetailsPage = () => {
                 </div>
                 <p className="text-sm text-gray-600">{product.sub_title}</p>
                 <div className="flex items-center space-x-2 mt-2">
-                  <span className="text-yellow-500 font-bold">4.9 ★</span>
+                  <span className="text-yellow-500 font-bold">4.9 ★★★★★</span>
                   <span className="text-sm text-gray-600">91 reviews</span>
                 </div>
 

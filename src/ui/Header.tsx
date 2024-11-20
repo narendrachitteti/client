@@ -89,19 +89,20 @@ const Navbar = () => {
       // Redirect to login page if not logged in
       navigate("/login");
       
-      // Use toast.info only once
+      // Use a unique toast ID to prevent duplicate toasts
       toast.info("Please login to view your cart", {
-        toastId: 'loginCartToast', // Add a unique ID to prevent duplicate toasts
+        toastId: 'login-cart-toast', // Unique identifier
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
+        unique: true 
       });
     }
   };
-  
+
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   const handleMenuClose = () => setAnchorEl(null);
@@ -172,33 +173,28 @@ const Navbar = () => {
                 </Avatar>
               </IconButton>
               <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                PaperProps={{ style: { width: 200 } }}
-              >
-                {isLoggedIn ? (
-                  <>
-                    <MenuItem>Welcome, {user?.name || "User"}</MenuItem>
-                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                  </>
-                ) : (
-                  <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
-                )}
-              </Menu>
-            </div>
-
-            {/* <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative text-gray-600 hover:text-gray-800 cart-icon"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              PaperProps={{ style: { width: 200 } }}
             >
-              <FiShoppingCart className="w-5 h-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">
-                  {cartCount}
-                </span>
+              {isLoggedIn ? (
+                <>
+                  <MenuItem>Welcome, {user?.name || "User"}</MenuItem>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </>
+              ) : (
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose(); // Close the menu
+                    navigate("/login"); // Navigate to the login page
+                  }}
+                >
+                  Login
+                </MenuItem>
               )}
-            </button> */}
+            </Menu>
+            </div>
             <button
         onClick={handleCartClick}
         className="relative text-gray-600 hover:text-gray-800 cart-icon"
