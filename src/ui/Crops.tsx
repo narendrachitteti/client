@@ -45,7 +45,7 @@ const CropsSection = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-800">Shop by Crops</h2>
-          <Link to="/crops" className="text-blue-500 hover:underline">
+          <Link to="/all-crops" className="text-blue-500 hover:underline">
             View All
           </Link>
         </div>
@@ -75,8 +75,9 @@ const CropsSection = () => {
               }}
             >
               {(isMobile ? crops : duplicatedCrops).map((crop, index) => (
-                <div
-                  key={index}
+                <Link
+                  key={`${crop._id}-${index}`}
+                  to={`/products/crop/${crop._id}`} // Pass crop ID dynamically to product page
                   className="flex-shrink-0 w-32 h-32 bg-white rounded-lg shadow-md border border-gray-200 p-4 flex items-center justify-center"
                 >
                   <img
@@ -84,7 +85,7 @@ const CropsSection = () => {
                     alt={crop.title}
                     className="w-full h-full object-contain"
                   />
-                </div>
+                </Link>
               ))}
             </div>
           </div>

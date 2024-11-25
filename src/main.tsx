@@ -26,6 +26,7 @@ import CartPage from "./ui/CartPage.tsx";
 import Login from "./ui/Login.tsx";
 import CheckoutBtn from "./ui/CheckoutBtn.tsx";
 import ProductSection from "./ui/ProductList.tsx";
+import Allcrops from "./ui/AllCrops.tsx";
 
 const RouterLayout = () => {
   return (
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
         element: <AllBrands />,
       },
       {
+        path: "/all-crops",
+        element: <Allcrops />,
+      },
+      {
         path: "/cartpage",
         element: <CartPage />,
       },
@@ -80,6 +85,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/products/brand/:brandId",
+        element: <Productpage />, // Add the Subcategory route here
+      },
+      {
+        path: "/products/crop/:cropId",
         element: <Productpage />, // Add the Subcategory route here
       },
       {

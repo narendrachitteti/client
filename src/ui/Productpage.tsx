@@ -3,10 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { getData } from "../lib";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import block from "../assets/block.png"
+import block from "../assets/block.png";
 
 const Productpage = () => {
-  const { categoryId, subcategoryId, brandId } = useParams();
+  const { categoryId, subcategoryId, brandId, cropId } = useParams(); // Added cropId
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,14 +21,18 @@ const Productpage = () => {
         let filteredProducts;
 
         // Handle different filtering scenarios
-        if (brandId) {
-          // If brandId is present, filter only by brand
+        if (cropId) {
+          // Filter by crop ID
+          filteredProducts = data.filter(product => product.crop_id === cropId);
+        } else if (brandId) {
+          // Filter by brand ID
           filteredProducts = data.filter(product => product.brand_id === brandId);
         } else if (categoryId && subcategoryId) {
-          // If both category and subcategory are present
-          filteredProducts = data.filter(product => 
-            product.category_id === categoryId && 
-            product.sub_category_id === subcategoryId
+          // Filter by category and subcategory IDs
+          filteredProducts = data.filter(
+            product =>
+              product.category_id === categoryId &&
+              product.sub_category_id === subcategoryId
           );
         } else {
           // Fallback to show all products
@@ -45,7 +49,7 @@ const Productpage = () => {
     };
 
     fetchProducts();
-  }, [categoryId, subcategoryId, brandId]);
+  }, [categoryId, subcategoryId, brandId, cropId]); // Added cropId as dependency
 
   return (
     <div className="p-5">
@@ -85,14 +89,15 @@ const Productpage = () => {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center text-center bg-white border rounded-lg shadow-md p-8">
-          
           <h3 className="text-2xl font-bold text-gray-700 mb-2">No Products Available</h3>
-          <p className="text-gray-600">We couldn't find any products matching this selection. Please check back later or explore other categories.</p>
+          <p className="text-gray-600">
+            We couldn't find any products matching this selection. Please check back later or explore other categories.
+          </p>
           <img
             src={block}
             alt="No products available"
             className="w-40 h-40 mb-4"
-          />        
+          />
         </div>
       )}
     </div>
