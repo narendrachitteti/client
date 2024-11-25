@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import mango from "../assets/brands/Mango.png";
-import pomegranate from "../assets/brands/Pomegranate.png";
-import pumpkin from "../assets/brands/Pumpkin.png";
-import rose from "../assets/brands/Rose.png";
-import tomato from "../assets/brands/Tomato.png";
-import Banana from "../assets/brands/Banana.png";
-import Cauliflower from "../assets/brands/Cauliflower.png";
 
 const CropsSection = () => {
+  const [crops, setCrops] = useState([]);
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Check if viewport is mobile
   useEffect(() => {
@@ -18,19 +13,29 @@ const CropsSection = () => {
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const crops = [
-    { name: "Banana", imagePath: Banana },
-    { name: "Cauliflower", imagePath: Cauliflower },
-    { name: "Mango", imagePath: mango },
-    { name: "Pomegranate", imagePath: pomegranate },
-    { name: "Pumpkin", imagePath: pumpkin },
-    { name: "Rose", imagePath: rose },
-    { name: "Tomato", imagePath: tomato },
-  ];
+  // Fetch crops data from the API
+  useEffect(() => {
+    const fetchCrops = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "https://farm-e-store-backend.vercel.app/api/crop/get-crops"
+        );
+        const data = await response.json();
+        setCrops(data);
+      } catch (error) {
+        console.error("Error fetching crops:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCrops();
+  }, []);
 
   // Double the crops array for seamless infinite scroll
   const duplicatedCrops = [...crops, ...crops];
@@ -45,38 +50,45 @@ const CropsSection = () => {
           </Link>
         </div>
 
-        <div 
-          className={`
-            relative overflow-hidden
-            ${isMobile ? 'flex space-x-4 overflow-x-auto scrollbar-hide' : ''}
-          `}
-        >
-          <div 
-            className={`
-              flex space-x-4
-              ${!isMobile ? 'animate-scroll hover:pause' : ''}
-              ${isPaused ? 'pause' : ''}
-            `}
-            onMouseEnter={() => !isMobile && setIsPaused(true)}
-            onMouseLeave={() => !isMobile && setIsPaused(false)}
-            style={{
-              animation: !isMobile ? 'scroll 20s linear infinite' : 'none'
-            }}
-          >
-            {(isMobile ? crops : duplicatedCrops).map((crop, index) => (
-              <div
-                key={index}
-                className="flex-shrink-0 w-32 h-32 bg-white rounded-lg shadow-md border border-gray-200 p-4 flex items-center justify-center"
-              >
-                <img
-                  src={crop.imagePath}
-                  alt={crop.name}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ))}
+        {/* Show loading message while data is being fetched */}
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[200px]">
+            <p className="text-lg font-medium">Loading crops...</p>
           </div>
-        </div>
+        ) : (
+          <div
+            className={`
+              relative overflow-hidden
+              ${isMobile ? "flex space-x-4 overflow-x-auto scrollbar-hide" : ""}
+            `}
+          >
+            <div
+              className={`
+                flex space-x-4
+                ${!isMobile ? "animate-scroll hover:pause" : ""}
+                ${isPaused ? "pause" : ""}
+              `}
+              onMouseEnter={() => !isMobile && setIsPaused(true)}
+              onMouseLeave={() => !isMobile && setIsPaused(false)}
+              style={{
+                animation: !isMobile ? "scroll 20s linear infinite" : "none",
+              }}
+            >
+              {(isMobile ? crops : duplicatedCrops).map((crop, index) => (
+                <div
+                  key={index}
+                  className="flex-shrink-0 w-32 h-32 bg-white rounded-lg shadow-md border border-gray-200 p-4 flex items-center justify-center"
+                >
+                  <img
+                    src={crop.imageUrl}
+                    alt={crop.title}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx>{`
@@ -88,16 +100,16 @@ const CropsSection = () => {
             transform: translateX(-50%);
           }
         }
-        
+
         .animate-scroll {
           display: flex;
           width: fit-content;
         }
-        
+
         .pause {
           animation-play-state: paused !important;
         }
-        
+
         @media (max-width: 767px) {
           .animate-scroll {
             animation: none;

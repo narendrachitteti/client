@@ -34,21 +34,21 @@ const AllCategories = () => {
       ) : error ? (
         <p>{error}</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
           {categories.map((item: CategoryProps) => (
             <Link
               to={`/category/${item._id}/subcategory`} // Link to the subcategory route
               key={item._id}
               className="flex flex-col items-center text-center border rounded-lg p-4 hover:shadow-lg transition-shadow"
             >
-              <div className="w-20 h-20 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden mb-2">
                 <img
                   src={item.imageUrl}
                   alt={item.title}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-lg font-semibold">{item.title}</p>
+              <p className="text-md font-semibold">{item.title}</p>
             </Link>
           ))}
         </div>

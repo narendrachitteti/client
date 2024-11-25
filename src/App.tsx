@@ -9,15 +9,19 @@ import ExclusiveGallery from "./ui/ExclusiveGallery";
 import CropDiagnosis from "./ui/CropDiagnosis";
 import StatsSection from "./ui/StatsSection";
 import CropsSection from "./ui/Crops";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   return (
     <main>
+      <ToastContainer />
       <HomeBanner />
       <Categories />
       <CropDiagnosis/>
       <BrandSection/>
       <CropsSection/>
-      <ExclusiveGallery />
+      {/* <ExclusiveGallery /> */}
       <BenefitsSection/>
       <ProductList />
       <StatsSection/>

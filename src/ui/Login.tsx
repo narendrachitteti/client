@@ -820,7 +820,7 @@ const Login = ({ setLogin }) => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Video Section - Responsive */}
-      <div className="w-full md:w-3/4 h-[50vh] md:h-screen">
+      <div className="w-full md:w-1/2 h-[50vh] md:h-screen">
         <video
           width="100%"
           height="100%"
@@ -836,7 +836,7 @@ const Login = ({ setLogin }) => {
       </div>
 
       {/* Login Form Section - Responsive */}
-      <div className="w-full md:w-1/4 flex items-center justify-center p-4 bg-white bg-opacity-90 backdrop-blur-sm">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-4 bg-white bg-opacity-90 backdrop-blur-sm">
         <div className="w-full max-w-sm space-y-8 bg-white p-6 rounded-xl shadow-xl">
           <div className="text-center">
             <div className="mx-auto w-16 h-16 md:w-20 md:h-20 mb-4">

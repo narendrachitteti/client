@@ -13,9 +13,10 @@ import {
 import farmLogo from "../assets/farmLogo.png";
 import { useCart } from "../contexts/CartContext";
 import CartPage from "./CartPage";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { Menu, MenuItem, IconButton, Avatar } from "@mui/material";
+import { useLocation } from "react-router-dom"; // Import useLocation
 
 const Navbar = () => {
   const [categories, setCategories] = useState([]);
@@ -30,7 +31,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const [user, setUser] = useState(null); // Store user information
   const navigate = useNavigate();
-
+  const location = useLocation(); // Declare useLocation at the top level
   // Fetch categories and subcategories only once on component mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -79,30 +80,49 @@ const Navbar = () => {
     navigate("/login");
   }, [navigate]);
 
+  // const handleCartClick = () => {
+  //   const storedUser = localStorage.getItem("user");
+
+  //   if (storedUser) {
+  //     setIsCartOpen(true); // Open cart page if the user is logged in
+  //   } else {
+  //     if (location.pathname !== "/login") {
+  //       // Avoid toasting when already on the login page
+  //       toast.info("Please login to view your cart", {
+  //         toastId: "login-cart-toast", // Unique ID for this toast
+  //         position: "top-right",
+  //         autoClose: 3000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //       });
+  //     }
+  //     navigate("/login"); // Redirect to login page
+  //   }
+  // };
   const handleCartClick = () => {
-    // Check if user is logged in before opening cart
     const storedUser = localStorage.getItem("user");
-    
+  
     if (storedUser) {
-      setIsCartOpen(true);
+      setIsCartOpen(true); // Open cart page if the user is logged in
     } else {
-      // Redirect to login page if not logged in
-      navigate("/login");
-      
-      // Use a unique toast ID to prevent duplicate toasts
-      toast.info("Please login to view your cart", {
-        toastId: 'login-cart-toast', // Unique identifier
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        unique: true 
-      });
+      if (location.pathname !== "/login" && location.pathname !== "/signup") {
+        // Avoid showing the toast if already on the login or signup page
+        toast.info("Please login to view your cart", {
+          toastId: "login-cart-toast", // Unique ID for this toast
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+      navigate("/login"); // Redirect to login page
     }
   };
-
+  
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   const handleMenuClose = () => setAnchorEl(null);
@@ -395,7 +415,6 @@ const Navbar = () => {
         })}
       </div>
       <CartPage isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      <ToastContainer />
     </nav>
   );
 };
